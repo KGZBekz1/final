@@ -1,32 +1,18 @@
-from django.shortcuts import render
-from .models import Movie,Director,Review
+from django.shortcuts import render, get_object_or_404
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from .models import Movie, Director, Review
 from .serializers import MovieSerializer, DirectorSerializer, ReviewSerializer
-from rest_fromework import generics
 
+@api_view(http_method_names=['GET'])
+def movie_list_view(request):
+    movies = Movie.objects.all()
+    serializer = MovieSerializer(movies, many=True)
+    return Response(serializer.data)
 
-class DirectorListAPIView(generics.ListcreateAPIView):
-    queryset = Director.objects.all()
-    serializer_class = DirectorSerializer
-
-class DirectorDetailAPIView(generics.RetrieveAPIView):
-    queryset = Director.objects.all()
-    serializer_class = DirectorSerializer
-    lookup_field = 'id'
-
-class MovieListAPIView(generics.ListcreateAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
-
-class MovieDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
-    lookup_field = 'id'
-
-class ReviewListAPIView(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-
-class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    lookup_field = 'id'
+@api_view(http_method_names=['GET'])
+def movie_detail_view(request, id):
+    movie = get_object_or_404(Movie, id=id)
+    serializer = MovieSerializer(movie)
+    return Response(serializer.data)
